@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Central de Documentos – CRAS</title>
+<meta name="description" content="Certidão, Guia de Remessa, Justificativa de Ponto e RMA em um só lugar.">
+<meta name="theme-color" content="#17263c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Central">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root{--bg:#eef2f6;--card:#fff;--ink:#17263c;--mut:#5b6b80;--line:#d9e1ea;--hd:#17263c}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1a2a;--card:#182638;--ink:#e8eef6;--mut:#9fb0c4;--line:#27384e;--hd:#0b1422}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+header{background:var(--hd);color:#fff;padding:calc(22px + env(safe-area-inset-top,0px)) 20px 26px}
+.wrap{max-width:720px;margin:0 auto}
+header h1{margin:0;font-size:1.45rem;letter-spacing:.2px}
+header p{margin:6px 0 0;color:#b9c7d8;font-size:.95rem}
+main{padding:18px 16px 28px}
+.grid{display:grid;gap:12px}
+@media (min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+.card{display:flex;align-items:center;gap:14px;padding:14px 14px 14px 12px;background:var(--card);border:1px solid var(--line);
+  border-left:5px solid var(--c);border-radius:14px;color:inherit;text-decoration:none;min-height:88px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05);-webkit-tap-highlight-color:transparent;transition:transform .12s,box-shadow .12s}
+.card:hover{box-shadow:0 6px 16px rgba(0,0,0,.12);transform:translateY(-1px)}
+.card:active{transform:scale(.985)}
+.card:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.card img{width:56px;height:56px;border-radius:13px;flex:none}
+.txt{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.txt strong{font-size:1.05rem}
+.txt small{color:var(--mut);font-size:.85rem;line-height:1.35}
+.go{flex:none;color:var(--mut)}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:22px;color:var(--mut);font-size:.85rem}
+.pill{display:inline-flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:50%;background:#2fa37a}
+.off .dot{background:#d98a1c}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;border-radius:10px;cursor:pointer}
+button:hover{border-color:var(--ink)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Central de Documentos</h1>
+  <p>CRAS – escolha o que você precisa gerar</p>
+</div></header>
+<main><div class="wrap">
+  <nav class="grid" aria-label="Aplicativos">
+      <a class="card" href="apps/certidao/" style="--c:#1b5fa7">
+        <img src="icons/app-certidao.png" alt="" width="56" height="56">
+        <span class="txt"><strong>Pedido de Certidão</strong><small>Gera ofício e declaração para pedido de certidão, com histórico e impressão em A4.</small></span>
+        <svg class="go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="card" href="apps/guia-de-remessa/" style="--c:#1f5f8b">
+        <img src="icons/app-guia-de-remessa.png" alt="" width="56" height="56">
+        <span class="txt"><strong>Guia de Remessa</strong><small>Gera a Guia de Remessa e o Termo de Entrega para setores externos.</small></span>
+        <svg class="go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="card" href="apps/justificativa-de-ponto/" style="--c:#1d5fa8">
+        <img src="icons/app-justificativa-de-ponto.png" alt="" width="56" height="56">
+        <span class="txt"><strong>Justificativa de Ponto</strong><small>Preenche a Justificativa de Ponto automaticamente a partir do espelho em PDF.</small></span>
+        <svg class="go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="card" href="apps/rma/" style="--c:#2f6b1f">
+        <img src="icons/app-rma.png" alt="" width="56" height="56">
+        <span class="txt"><strong>RMA – Soma Mensal</strong><small>Soma os RMA de cada assistente social e gera o relatório mensal consolidado.</small></span>
+        <svg class="go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+  </nav>
+  <div class="bar">
+    <span class="pill" id="net"><i class="dot"></i><span id="netTxt">Online</span></span>
+    <button id="install" hidden>Instalar aplicativo</button>
+  </div>
+</div></main>
+<script>
+(function(){
+  var net=document.getElementById('net'),txt=document.getElementById('netTxt');
+  function upd(){var on=navigator.onLine;net.classList.toggle('off',!on);txt.textContent=on?'Online':'Sem internet – os apps abrem normalmente';}
+  addEventListener('online',upd);addEventListener('offline',upd);upd();
+  var dp=null,b=document.getElementById('install');
+  addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;b.hidden=false;});
+  b.onclick=async function(){if(!dp)return;dp.prompt();await dp.userChoice;dp=null;b.hidden=true;};
+  addEventListener('appinstalled',function(){b.hidden=true;});
+  if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))
+    navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('Service worker não registrado:',e);});
+})();
+</script>
+</body>
+</html>

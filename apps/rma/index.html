@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2f6b1f">
+<meta name="description" content="Soma dos RMA de cada assistente social e relatório mensal consolidado para impressão.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RMA CRAS">
+<title>RMA CRAS – Soma Mensal</title>
+<style>
+:root{
+  --bg:#eef3ea; --surface:#fff; --fg:#1a2616; --muted:#5d6b57; --line:#d3dccd;
+  --accent:#2f6b1f; --accent-fg:#fff; --soft:#e4efd9; --warn:#b4531a; --danger:#b3261e; --field:#fbfdf9;
+  --shadow:0 1px 2px rgba(20,40,10,.08),0 8px 24px rgba(20,40,10,.08);
+  --f:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#10160d; --surface:#182213; --fg:#e7efe2; --muted:#9bab94; --line:#2b3a24;
+  --accent:#8cc765; --accent-fg:#0d1a07; --soft:#21321a; --warn:#e69a62; --danger:#f0857d; --field:#121a0e;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark;}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--f);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 16px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.brand b{font-size:16px;letter-spacing:-.01em}.brand small{color:var(--muted);font-size:12px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:500;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.primary:hover{filter:brightness(1.1);color:var(--accent-fg)}
+.btn.danger:hover{border-color:var(--danger);color:var(--danger)}
+.field{background:var(--field);border:1px solid var(--line);border-radius:6px;padding:6px 9px;width:100%}
+label.l{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+.saved{font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:4px;padding:10px 16px 0}
+.tab{border:1px solid var(--line);border-bottom:0;background:var(--surface);padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-weight:600;color:var(--muted)}
+.tab[aria-selected=true]{color:var(--accent);background:var(--soft)}
+main{padding:0 16px 40px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:0 8px 8px 8px;box-shadow:var(--shadow)}
+details.unit{border-bottom:1px solid var(--line);padding:10px 14px}
+details.unit summary{cursor:pointer;font-weight:600;color:var(--accent)}
+.unitgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.scroll{overflow:auto;max-height:calc(100vh - 230px)}
+table.grid{border-collapse:separate;border-spacing:0;width:100%;min-width:max-content}
+.grid th,.grid td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:0;background:var(--surface)}
+.grid thead th{position:sticky;top:0;z-index:3;padding:6px;background:var(--soft);min-width:130px}
+.grid thead th.sticky{left:0;z-index:5;min-width:min(46vw,380px);text-align:left}
+.grid th.sticky{position:sticky;left:0;z-index:2;text-align:left;font-weight:400;padding:6px 10px;font-size:13px;background:var(--surface)}
+.grid th.sticky b{color:var(--accent);margin-right:4px}
+.grid tr.blk td{background:var(--accent);color:var(--accent-fg);font-weight:700;padding:7px 10px;position:sticky;left:0}
+.grid tr.grp td{background:var(--soft);font-weight:600;padding:6px 10px;font-size:13px}
+.grid td input{width:100%;border:0;background:transparent;text-align:center;padding:9px 4px;font-size:15px;font-variant-numeric:tabular-nums}
+.grid td input:focus{background:var(--soft);outline:2px solid var(--accent);outline-offset:-2px}
+.grid td.tot,.grid thead th.tot{background:var(--soft);font-weight:700;text-align:center;font-size:15px;min-width:90px;position:sticky;right:0;z-index:2;border-left:2px solid var(--accent)}
+.grid thead th.tot{z-index:5}
+.grid td.tot.warn{color:var(--warn)}
+.pname{display:flex;gap:4px}.pname input{flex:1;min-width:0;border:1px solid var(--line);border-radius:5px;padding:5px 7px;background:var(--field);font-weight:600}
+.pname button{border:0;background:transparent;cursor:pointer;font-size:18px;color:var(--muted);line-height:1}.pname button:hover{color:var(--danger)}
+.hint{padding:10px 14px;color:var(--muted);font-size:12.5px}
+/* ---------- fichas ---------- */
+.cards{display:grid;gap:8px;padding:0 14px 6px}
+.card{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--field)}
+.chip{margin-left:10px;font-size:12px;border-radius:99px;padding:2px 9px;background:var(--line);color:var(--muted)}
+.chip.ok{background:var(--soft);color:var(--accent);font-weight:600}.chip.wip{background:#fbe9d8;color:var(--warn)}
+.fblk{background:var(--accent);color:var(--accent-fg);font-weight:700;padding:8px 14px;margin-top:6px}
+.fgrp{background:var(--soft);font-weight:600;padding:6px 14px;font-size:13px}
+.frow{display:grid;grid-template-columns:1fr 92px 74px;gap:8px;align-items:center;padding:6px 14px;border-bottom:1px solid var(--line)}
+.frow label{font-size:13.5px}.frow label b{color:var(--accent);margin-right:4px}
+.frow input{width:100%;text-align:center;font-size:18px;font-weight:600;padding:9px 4px;border:1px solid var(--line);border-radius:6px;background:var(--field)}
+.frow input:focus{border-color:var(--accent);background:var(--soft)}
+.gt{font-size:12px;color:var(--muted);text-align:center;border-left:1px dashed var(--line)}.gt i{font-style:normal;font-weight:700;color:var(--fg);font-size:14px}
+.fbar{position:sticky;bottom:0;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:10px 14px;background:var(--surface);border-top:2px solid var(--accent)}
+/* ---------- folha do relatório ---------- */
+#viewReport{display:none}
+.rbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px 0}
+.pages{display:flex;flex-direction:column;align-items:center;gap:18px;overflow:auto}
+.page{background:#fff;color:#000;width:210mm;min-height:297mm;padding:10mm 11mm;box-shadow:var(--shadow);font:11px/1.25 Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page table{width:100%;border-collapse:collapse}
+.page td,.page th{border:1px solid #000;padding:3px 6px;vertical-align:middle}
+.page .hd td{font-weight:700;font-size:11px}
+.page .blkt{background:#2f5d1f;color:#fff;font-weight:700;font-size:13px;padding:6px 10px;margin:9px 0 5px;border:1px solid #000}
+.page tr.g td{background:#a9d34f;font-weight:700}
+.page td.v{width:70px;text-align:center;font-weight:700;font-size:12px}
+.page td.k{width:34px;font-weight:700;border-right:0}.page td.t{border-left:0}
+.page .note{color:#2f5d1f;font-style:italic;font-weight:700;font-size:9.5px;margin:2px 0 0}
+.page .sig{margin-top:14px;font-weight:700;font-style:italic;color:#2f5d1f}
+.page .sig span{display:inline-block;border-bottom:1px solid #000;min-width:300px;color:#000;font-style:normal;padding:0 6px}
+.page table.det th,.page table.det td{font-size:10px}.page table.det td.v{width:auto;font-size:10.5px}
+.page table.det th{background:#a9d34f}
+@media (max-width:820px){.page{transform-origin:top left}}
+@page{size:A4;margin:0}
+@media print{
+  body{background:#fff}
+  .top,.tabs,#viewEntry,#viewFichas,.rbar,.noprint{display:none!important}
+  main{padding:0}#viewReport{display:block!important}
+  .pages{display:block;overflow:visible}
+  .page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden;break-after:page}
+  .page:last-child{break-after:auto}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><b>RMA CRAS – Soma Mensal</b><small>Lance os números de cada assistente social; o total geral é calculado sozinho.</small></div>
+  <div class="tools">
+    <label class="l" style="flex-direction:row;align-items:center;gap:6px">Mês <input class="field" type="month" id="mes" style="width:auto"></label>
+    <span class="saved" id="saved">Salvo no aparelho</span>
+    <button class="btn" id="install" hidden>Instalar app</button>
+  </div>
+</header>
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="tabF" aria-selected="true">Fichas</button>
+  <button class="tab" role="tab" id="tabE" aria-selected="false">Planilha (conferência)</button>
+  <button class="tab" role="tab" id="tabR" aria-selected="false">Relatório (A4)</button>
+</div>
+<main>
+ <section id="viewFichas" class="panel">
+  <div id="fichas"></div>
+  <div class="bar" style="border-top:1px solid var(--line);border-bottom:0">
+    <button class="btn" id="clearM">Limpar valores do mês</button>
+    <span style="flex:1"></span>
+    <button class="btn" id="exp">Backup (baixar)</button>
+    <button class="btn" id="imp">Restaurar backup</button>
+    <input type="file" id="file" accept="application/json" hidden>
+  </div>
+  <details class="unit" style="border-top:1px solid var(--line);border-bottom:0"><summary>Dados da unidade e responsável (aparecem no relatório)</summary>
+    <div class="unitgrid" id="meta"></div>
+  </details>
+ </section>
+ <section id="viewEntry" class="panel" style="display:none">
+  <div class="scroll"><table class="grid" id="grid"></table></div>
+  <div class="hint">Visão geral de todas as fichas lado a lado, para conferir (também dá para editar aqui). Total em laranja = perfil (B) maior que o número de novas famílias (A.2).</div>
+ </section>
+ <section id="viewReport">
+  <div class="rbar">
+    <button class="btn primary" id="print">Imprimir</button>
+    <label><input type="checkbox" id="detail"> Incluir 2ª página com o detalhamento por assistente social</label>
+  </div>
+  <div class="pages" id="pages"></div>
+ </section>
+</main>
+<script>
+const BLOCKS=[
+ {title:"Bloco I - Famílias em acompanhamento pelo PAIF",groups:[
+  {h:"A. Volume de famílias em acompanhamento pelo PAIF",col:"Total",items:[
+   ["A.1","Total de famílias em acompanhamento pelo PAIF"],
+   ["A.2","Novas famílias inseridas no acompanhamento do PAIF durante o mês de referência"]]},
+  {h:"B. Perfil das novas famílias inseridas em acompanhamento no PAIF no mês de referência",col:"",items:[
+   ["B.1","Famílias em situação de extrema pobreza"],
+   ["B.2","Famílias beneficiárias do Programa Bolsa Família"],
+   ["B.3","Famílias beneficiárias do Programa Bolsa Família em descumprimento de condicionalidades"],
+   ["B.4","Famílias com membros beneficiários do BPC"],
+   ["B.5","Famílias com crianças ou adolescentes em situação de trabalho infantil"],
+   ["B.6","Famílias com crianças ou adolescentes em Serviço de Acolhimento"]]}],
+  note:"Atenção! Os itens B1 a B6 identificam apenas alguns perfis de famílias. É normal que algumas famílias contadas no item A2 não se enquadrem em nenhuma das condições acima, enquanto outras podem se enquadrar simultaneamente em mais de uma condição. Portanto, a soma de B1 a B6 não terá, necessariamente, o mesmo valor do item A2."},
+ {title:"Bloco 2 - Atendimentos particularizados realizados no CRAS",groups:[
+  {h:"C. Volume de atendimentos particularizados realizados no CRAS no mês de referência",col:"Quantidade",items:[
+   ["C.1","Total de atendimentos particularizados realizados no mês de referência"],
+   ["C.2","Famílias encaminhadas para inclusão no Cadastro Único"],
+   ["C.3","Famílias encaminhadas para atualização cadastral no Cadastro Único"],
+   ["C.4","Indivíduos encaminhados para acesso ao BPC"],
+   ["C.5","Famílias encaminhadas para o CREAS"],
+   ["C.6","Visitas domiciliares realizadas"],
+   ["C.7","Total de auxílios-natalidade concedidos/entregues durante o mês de referência"],
+   ["C.8","Total de auxílios-funeral concedidos/entregues durante o mês de referência"],
+   ["C.9","Outros benefícios eventuais concedidos/entregues durante o mês de referência"]]}],
+  note:"Atenção! Nos campos C1 a C6 devem ser contabilizadas todas as famílias/indivíduos, independente de estarem, ou não, em acompanhamento sistemático do PAIF. Nos campos C7, C8 e C9, considere os auxílios e os benefícios eventuais concedidos e/ou entregues no CRAS. Caso o CRAS não conceda nem entregue auxílios ou benefícios-eventuais marque 0 (zero) nos respectivos campos."},
+ {title:"Bloco 3 - Atendimentos Coletivos Realizados no CRAS",groups:[
+  {h:"D. Volume de atendimentos coletivos realizados no CRAS durante o mês de referência",col:"Quantidade",items:[
+   ["D.1","Famílias participando regularmente de grupos no âmbito do PAIF"],
+   ["D.2","Crianças de 0 a 6 anos em Serviços de Convivência e Fortalecimento de Vínculos"],
+   ["D.3","Crianças/adolescentes de 7 a 14 anos em Serviços de Convivência e Fortalecimento de Vínculos"],
+   ["D.4","Adolescentes de 15 a 17 anos em Serviços de Convivência e Fortalecimento de Vínculos"],
+   ["D.8","Adultos entre 18 e 59 anos em Serviços de Convivência e Fortalecimento de Vínculos"],
+   ["D.5","Idosos em Serviços de Convivência e Fortalecimento de Vínculos para idosos"],
+   ["D.6","Pessoas que participaram de palestras, oficinas e outras atividades coletivas de caráter não continuado"],
+   ["D.7","Pessoas com deficiência, participando dos Serviços de Convivência ou dos grupos do PAIF"]]}],
+  note:"* Apesar dos serviços de convivência não estarem mais vinculados a faixas etárias, para facilidade de registro, os usuários devem ser contabilizados de acordo com a sua idade, independentemente de estarem, ou não, no mesmo grupo."}
+];
+const META=[["unidade","Nome da unidade"],["numero","Nº da unidade"],["endereco","Endereço"],["municipio","Município"],["uf","UF"],["responsavel","Nome e cargo do responsável"]];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+const uid=()=>"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function prevMonth(){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
+let S=store.get("rma.v1",null)||{meta:{unidade:"CRAS BOIÇUCANGA",numero:"",endereco:"Rua Sgto. Filisbino Teodoro da Silva, 200",municipio:"SÃO SEBASTIÃO",uf:"SP",responsavel:""},cur:prevMonth(),months:{},detail:false};
+let tmr;
+function save(){const ok=store.set("rma.v1",S);const el=$("#saved");el.textContent=ok?"Salvo no aparelho ✓":"Não foi possível salvar!";clearTimeout(tmr);tmr=setTimeout(()=>el.textContent="Salvo no aparelho",1500)}
+const newP=n=>({id:uid(),nome:n||"",v:{}});
+function month(){
+  if(!S.months[S.cur]){
+    const ks=Object.keys(S.months).filter(x=>x<S.cur).sort(),prev=ks.pop()||Object.keys(S.months).sort().pop();
+    S.months[S.cur]={profs:prev?S.months[prev].profs.map(p=>newP(p.nome)):[newP()]};
+  }
+  return S.months[S.cur];
+}
+const num=v=>parseInt(v,10)||0;
+const total=k=>month().profs.reduce((a,p)=>a+num(p.v[k]),0);
+const allKeys=()=>BLOCKS.flatMap(b=>b.groups.flatMap(g=>g.items.map(i=>i[0])));
+function pn(p,i){return p.nome.trim()||"Assistente "+(i+1)}
+
+/* ---------- lançamento ---------- */
+function renderMeta(){
+  $("#meta").innerHTML=META.map(([k,l])=>`<label class="l">${l}<input class="field" data-meta="${k}" value="${esc(S.meta[k])}"></label>`).join("");
+}
+function renderGrid(){
+  const m=month(),n=m.profs.length+2;
+  let h=`<thead><tr><th class="sticky">Item</th>`;
+  m.profs.forEach((p,i)=>h+=`<th><div class="pname"><input data-name="${p.id}" value="${esc(p.nome)}" placeholder="Assistente ${i+1}" aria-label="Nome do profissional"><button data-del="${p.id}" title="Remover" aria-label="Remover">×</button></div></th>`);
+  h+=`<th class="tot">Total geral</th></tr></thead><tbody>`;
+  BLOCKS.forEach(b=>{
+    h+=`<tr class="blk"><td colspan="${n}">${b.title}</td></tr>`;
+    b.groups.forEach(g=>{
+      h+=`<tr class="grp"><td colspan="${n}">${g.h}</td></tr>`;
+      g.items.forEach(([k,t])=>{
+        h+=`<tr><th class="sticky"><b>${k}</b>${t}</th>`;
+        m.profs.forEach(p=>h+=`<td><input inputmode="numeric" autocomplete="off" data-k="${k}" data-id="${p.id}" value="${p.v[k]??""}" aria-label="${k} – ${esc(p.nome)}"></td>`);
+        h+=`<td class="tot" data-t="${k}">${total(k)}</td></tr>`;
+      });
+    });
+  });
+  $("#grid").innerHTML=h+"</tbody>";
+  $("#mes").value=S.cur;
+  updTotals();
+}
+function updTotals(){
+  allKeys().forEach(k=>{const c=document.querySelector(`[data-t="${k}"]`);if(c)c.textContent=total(k)});
+  const a2=total("A.2");
+  ["B.1","B.2","B.3","B.4","B.5","B.6"].forEach(k=>{const c=document.querySelector(`[data-t="${k}"]`);if(c)c.classList.toggle("warn",total(k)>a2)});
+}
+$("#grid").addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.k){
+    t.value=t.value.replace(/\D/g,"").slice(0,6);
+    const p=month().profs.find(x=>x.id===t.dataset.id);
+    if(t.value==="")delete p.v[t.dataset.k];else p.v[t.dataset.k]=num(t.value);
+    updTotals();save();
+  }else if(t.dataset.name){
+    month().profs.find(x=>x.id===t.dataset.name).nome=t.value;save();
+  }
+});
+$("#grid").addEventListener("focusin",e=>{if(e.target.dataset.k)e.target.select()});
+$("#grid").addEventListener("keydown",e=>{
+  const t=e.target;if(!t.dataset.k)return;
+  const dir=e.key==="Enter"||e.key==="ArrowDown"?1:e.key==="ArrowUp"?-1:0;if(!dir)return;
+  e.preventDefault();
+  const col=[...document.querySelectorAll(`input[data-id="${t.dataset.id}"][data-k]`)],i=col.indexOf(t);
+  const nx=col[i+dir];if(nx)nx.focus();
+});
+$("#grid").addEventListener("click",e=>{
+  const id=e.target.dataset.del;if(!id)return;
+  const m=month(),p=m.profs.find(x=>x.id===id);
+  if(m.profs.length<2)return alert("Mantenha pelo menos um profissional.");
+  if(confirm(`Remover "${pn(p,m.profs.indexOf(p))}" e os valores lançados neste mês?`)){m.profs=m.profs.filter(x=>x.id!==id);save();renderGrid()}
+});
+$("#meta").addEventListener("input",e=>{const k=e.target.dataset.meta;if(k){S.meta[k]=e.target.value;save()}});
+$("#clearM").onclick=()=>{if(confirm("Apagar todos os valores lançados neste mês? (os nomes são mantidos)")){month().profs.forEach(p=>{p.v={};p.done=false});save();renderGrid();renderFichas()}};
+$("#mes").onchange=e=>{if(!e.target.value)return;S.cur=e.target.value;cur=null;save();renderGrid();renderFichas();if(onReport)renderReport()};
+
+/* ---------- fichas (uma por assistente social) ---------- */
+let cur=null;
+const NK=allKeys().length,filled=p=>Object.keys(p.v).length;
+function renderFichas(){
+  const m=month(),el=$("#fichas");
+  if(cur&&!m.profs.some(p=>p.id===cur))cur=null;
+  if(!cur){
+    let h=`<div class="bar"><b>Fichas de ${mesFmt()}</b><span class="saved">${m.profs.filter(p=>p.done).length} de ${m.profs.length} concluídas</span><span style="flex:1"></span><button class="btn primary" data-act="new">+ Nova ficha</button></div><div class="cards">`;
+    m.profs.forEach((p,i)=>{
+      const f=filled(p),st=p.done?["ok","Concluída"]:f?["wip",`Em andamento (${f}/${NK})`]:["","Não iniciada"];
+      h+=`<div class="card"><div><b>${esc(pn(p,i))}</b><span class="chip ${st[0]}">${st[1]}</span></div><div><button class="btn primary" data-open="${p.id}">${p.done?"Revisar":f?"Continuar":"Preencher"}</button> <button class="btn danger" data-rm="${p.id}" aria-label="Remover ficha">×</button></div></div>`;
+    });
+    el.innerHTML=h+`</div><div class="hint">Cada ficha é o RMA de um assistente social. Preencha uma por vez: ao concluir, os dados ficam guardados e você volta para a próxima. O total geral é somado sozinho e sai na aba Relatório.</div>`;
+    return;
+  }
+  const i=m.profs.findIndex(p=>p.id===cur),p=m.profs[i];
+  let h=`<div class="bar"><button class="btn" data-act="back">← Fichas</button><b>Ficha ${i+1} de ${m.profs.length}</b><input class="field" style="max-width:320px" data-fname placeholder="Nome do assistente social" value="${esc(p.nome)}"></div>`;
+  BLOCKS.forEach(b=>{
+    h+=`<div class="fblk">${b.title}</div>`;
+    b.groups.forEach(g=>{h+=`<div class="fgrp">${g.h}</div>`;g.items.forEach(([k,t])=>{
+      h+=`<div class="frow"><label for="f${k}"><b>${k}</b>${t}</label><input id="f${k}" inputmode="numeric" autocomplete="off" data-fk="${k}" value="${p.v[k]??""}"><span class="gt" title="Total geral de todas as fichas">Σ geral<br><i data-gt="${k}">${total(k)}</i></span></div>`})});
+    h+=`<p class="hint">${b.note}</p>`;
+  });
+  el.innerHTML=h+`<div class="fbar"><button class="btn" data-act="back">Salvar e voltar</button><button class="btn" data-act="done">Concluir e voltar</button><button class="btn primary" data-act="next">Concluir e próxima ficha</button></div>`;
+  scrollTo(0,0);
+  if(!p.nome&&!filled(p))el.querySelector("[data-fname]").focus();
+}
+$("#fichas").addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  const m=month(),d=t.dataset;
+  if(d.open){cur=d.open;return renderFichas()}
+  if(d.rm){const p=m.profs.find(x=>x.id===d.rm);if(confirm(`Remover a ficha de "${pn(p,m.profs.indexOf(p))}" e os valores dela?`)){m.profs=m.profs.filter(x=>x.id!==d.rm);save();renderFichas()}return}
+  if(d.act==="new"){const p=newP();m.profs.push(p);cur=p.id;save();return renderFichas()}
+  if(d.act==="back"){cur=null;return renderFichas()}
+  const p=m.profs.find(x=>x.id===cur);if(!p)return;
+  p.done=true;
+  if(d.act==="done"){cur=null}
+  else{
+    const i=m.profs.indexOf(p),nx=m.profs.slice(i+1).find(x=>!x.done)||m.profs.find(x=>!x.done);
+    if(nx)cur=nx.id;else{const n=newP();m.profs.push(n);cur=n.id}
+  }
+  save();renderFichas();
+});
+$("#fichas").addEventListener("input",e=>{
+  const t=e.target,p=month().profs.find(x=>x.id===cur);if(!p)return;
+  if(t.dataset.fname!==undefined){p.nome=t.value;save();return}
+  if(t.dataset.fk){
+    t.value=t.value.replace(/\D/g,"").slice(0,6);
+    if(t.value==="")delete p.v[t.dataset.fk];else p.v[t.dataset.fk]=num(t.value);
+    document.querySelectorAll("[data-gt]").forEach(c=>c.textContent=total(c.dataset.gt));
+    save();
+  }
+});
+$("#fichas").addEventListener("focusin",e=>{if(e.target.dataset.fk)e.target.select()});
+$("#fichas").addEventListener("keydown",e=>{
+  if(e.key!=="Enter"||!e.target.dataset.fk)return;
+  e.preventDefault();
+  const all=[...document.querySelectorAll("#fichas [data-fk]")],n=all[all.indexOf(e.target)+1];
+  if(n)n.focus();else e.target.blur();
+});
+
+/* ---------- relatório ---------- */
+function mesFmt(){const[y,m]=S.cur.split("-");return`${m} / ${y}`}
+function row(k,t){return`<tr><td class="k">${k}</td><td class="t">${t}</td><td class="v">${total(k)}</td></tr>`}
+function sheet1(){
+  const M=S.meta;
+  let h=`<div class="page"><table class="hd"><tr><td style="width:62%">FORMULÁRIO DE REGISTRO MENSAL DE ATENDIMENTOS DO CRAS</td><td>MÊS: ${mesFmt()}</td></tr>
+  <tr><td>Nome da Unidade: <span style="font-weight:400">${esc(M.unidade)}</span></td><td>Nº da Unidade: <span style="font-weight:400">${esc(M.numero)}</span></td></tr>
+  <tr><td colspan="2">Endereço: <span style="font-weight:400">${esc(M.endereco)}</span></td></tr>
+  <tr><td colspan="2">Município: <span style="font-weight:400">${esc(M.municipio)}</span> &nbsp;&nbsp;&nbsp; UF: <span style="font-weight:400">${esc(M.uf)}</span></td></tr></table>`;
+  BLOCKS.forEach(b=>{
+    h+=`<div class="blkt">${b.title}</div><table>`;
+    b.groups.forEach(g=>{h+=`<tr class="g"><td colspan="2">${g.h}</td><td class="v">${g.col}</td></tr>`;g.items.forEach(([k,t])=>h+=row(k,t))});
+    h+=`</table><p class="note">${b.note}</p>`;
+  });
+  return h+`<p class="sig">Nome e cargo da pessoa responsável no CRAS pelas informações: <span>${esc(M.responsavel)}</span></p></div>`;
+}
+function sheet2(){
+  const m=month();
+  let h=`<div class="page"><div class="blkt" style="margin-top:0">Detalhamento por assistente social – ${esc(S.meta.unidade)} – ${mesFmt()}</div><table class="det"><tr><th style="text-align:left">Item</th>`;
+  m.profs.forEach((p,i)=>h+=`<th>${esc(pn(p,i))}</th>`);
+  h+=`<th>Total geral</th></tr>`;
+  BLOCKS.forEach(b=>b.groups.forEach(g=>g.items.forEach(([k,t])=>{
+    h+=`<tr><td><b>${k}</b> ${t}</td>`+m.profs.map(p=>`<td class="v">${p.v[k]??0}</td>`).join("")+`<td class="v" style="background:#e4efd9">${total(k)}</td></tr>`;
+  })));
+  return h+`</table></div>`;
+}
+let onReport=false;
+function renderReport(){$("#pages").innerHTML=sheet1()+(S.detail?sheet2():"");fit()}
+function fit(){ // reduz a folha na tela do celular (a impressão não é afetada)
+  const w=$("#viewReport").clientWidth,pw=210*3.7795;
+  document.querySelectorAll(".page").forEach(p=>{p.style.zoom=w<pw+20?(w-8)/pw:""});
+}
+function show(w){
+  onReport=w==="R";
+  $("#viewFichas").style.display=w==="F"?"":"none";
+  $("#viewEntry").style.display=w==="E"?"":"none";
+  $("#viewReport").style.display=w==="R"?"block":"none";
+  [["F","#tabF"],["E","#tabE"],["R","#tabR"]].forEach(([k,q])=>$(q).setAttribute("aria-selected",w===k));
+  if(w==="R")renderReport();if(w==="F")renderFichas();if(w==="E")renderGrid();
+}
+$("#tabF").onclick=()=>show("F");$("#tabE").onclick=()=>show("E");$("#tabR").onclick=()=>show("R");
+$("#detail").onchange=e=>{S.detail=e.target.checked;save();renderReport()};
+$("#print").onclick=()=>{
+  document.querySelectorAll(".page").forEach(p=>p.style.zoom="");
+  window.print();fit();
+};
+window.addEventListener("resize",()=>onReport&&fit());
+
+/* ---------- backup ---------- */
+$("#exp").onclick=()=>{
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:"application/json"}));
+  a.download="backup-rma-"+new Date().toISOString().slice(0,10)+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+$("#imp").onclick=()=>$("#file").click();
+$("#file").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  f.text().then(t=>{
+    const d=JSON.parse(t);if(!d.months||!d.meta)throw 0;
+    if(!confirm("Substituir TODOS os dados atuais pelo backup?"))return;
+    S=d;cur=null;save();renderMeta();renderGrid();renderFichas();$("#detail").checked=!!S.detail;
+  }).catch(()=>alert("Arquivo de backup inválido."));
+  e.target.value="";
+};
+
+/* ---------- instalação PWA ---------- */
+let dp;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;$("#install").hidden=false});
+$("#install").onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;$("#install").hidden=true};
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))void 0;
+
+$("#detail").checked=!!S.detail;
+renderMeta();renderGrid();show("F");
+</script>
+<a href="../../" id="__central" aria-label="Voltar ao menu" title="Voltar ao menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></a><style>#__central{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:2147483000;width:44px;height:44px;border-radius:50%;background:rgba(23,38,60,.88);color:#fff;display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.3);text-decoration:none;-webkit-tap-highlight-color:transparent}#__central:active{transform:scale(.94)}@media print{#__central{display:none!important}}</style>
+</body>
+</html>
